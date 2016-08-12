@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#484E61" >
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#484E61" >
+        
+        <Button
+			android:id="@+id/setting_back"
+			android:layout_width="22dp"
+			android:layout_height="18dp"
+			android:layout_centerVertical="true"
+			android:layout_marginLeft="15dp"
+			android:background="@drawable/setting_back3" />
+
+        <TextView
+            android:id="@+id/city_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="#fff"
+            android:textSize="24sp" 
+            android:text="设置"/>       
+    </RelativeLayout>
+      
+    <View
+		android:layout_width="fill_parent"
+		android:layout_height="1dp"
+		android:background="#8F8F8F" />
+    
+    <RelativeLayout
+        android:id="@+id/layout_changecity"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#484E61"
+        android:clickable="true" >
+        
+        <TextView
+			android:id="@+id/change_city"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:gravity="center_vertical"
+			android:layout_alignParentLeft="true"
+			android:layout_marginLeft="10dp"
+			android:textSize="20sp"
+			android:textColor="#fff"
+			android:text="切换城市"/>
+
+        <ImageView
+            android:id="@+id/changecity_image"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="16dp"
+			android:src="@drawable/changecity1"/>    
+    </RelativeLayout>
+    
+    <View
+		android:layout_width="fill_parent"
+		android:layout_height="1dp"
+		android:layout_marginLeft="10dp"
+		android:layout_marginRight="10dp"
+		android:background="#8F8F8F" />
+    
+ 	<RelativeLayout
+ 	    android:id="@+id/layout_enablegps"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#484E61"
+        android:clickable="true" >
+        
+        <TextView
+			android:id="@+id/enable_gps"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:gravity="center_vertical"
+			android:layout_alignParentLeft="true"
+			android:layout_marginLeft="10dp"
+			android:textSize="20sp"
+			android:textColor="#fff"
+			android:text="GPS定位"/>
+
+         <ImageView
+            android:id="@+id/enablegps_image"
+            android:layout_width="28dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="12dp"
+			android:src="@drawable/check_off"/>       
+    </RelativeLayout>
+    
+    <View
+		android:layout_width="fill_parent"
+		android:layout_height="1dp"
+		android:layout_marginLeft="10dp"
+		android:layout_marginRight="10dp"
+		android:background="#8F8F8F" />
+    
+ 	<RelativeLayout
+ 	    android:id="@+id/layout_refreshtime"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#484E61"
+        android:clickable="true" >
+        
+        <TextView
+			android:id="@+id/refresh_time"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:gravity="center_vertical"
+			android:layout_alignParentLeft="true"
+			android:layout_marginLeft="10dp"
+			android:textSize="20sp"
+			android:textColor="#fff"
+			android:text="定时刷新"/>
+
+         <TextView
+            android:id="@+id/time_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            android:textSize="20sp"
+			android:textColor="#63B8FF"
+			android:text="2h"/>       
+    </RelativeLayout>
+    
+ 	<View
+		android:layout_width="fill_parent"
+		android:layout_height="1dp"
+		android:layout_marginLeft="10dp"
+		android:layout_marginRight="10dp"
+		android:background="#8F8F8F" />
+
+</LinearLayout>
