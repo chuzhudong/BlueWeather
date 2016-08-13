@@ -2,6 +2,8 @@ package com.example.blueweather.activity;
 
 import com.example.blueweather.R;
 import com.example.blueweather.database.BlueWeatherDB;
+import com.example.blueweather.fragment.NetErrorFragment;
+import com.example.blueweather.fragment.WeatherFragment;
 import com.example.blueweather.model.Weather;
 import com.example.blueweather.util.BaiduLocation;
 import com.example.blueweather.util.HttpCallBackListener;
@@ -12,6 +14,8 @@ import com.example.blueweather.util.RawDataCallBackListener;
 import com.example.blueweather.util.Utility;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,8 +36,6 @@ import android.widget.Toast;
 
 public class WeatherActivity extends Activity implements OnClickListener{
 	
-	private static final String CELSIUS= "\u2103";
-
 	private static final String TAG = "WeatherActivity";
 	
 	private static final int CITY_NONE = -1;
@@ -58,31 +60,8 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	private static final int RAWDATA_NOT_LOADED = 0;
 	private static final int RAWDATA_LOADED = 1;
 	private static final int RAWDATA_NONE = -1;
-	
-	private RelativeLayout watherInfoLayout;
-	
+		
 	private TextView cityNameText;
-	
-	private ImageView day1Image;
-	private TextView day1Temp1;
-	private TextView day1Temp2;
-	private TextView day1CurrentTemp;
-	private TextView day1Weather;
-	
-	private TextView day2Text;
-	private ImageView day2Image;
-	private TextView day2Temp1;
-	private TextView day2Temp2;
-	
-	private TextView day3Text;
-	private ImageView day3Image;
-	private TextView day3Temp1;
-	private TextView day3Temp2;
-	
-	private TextView day4Text;
-	private ImageView day4Image;
-	private TextView day4Temp1;
-	private TextView day4Temp2;
 	
 	private ImageView gpsStatusImage;
 	
@@ -95,7 +74,7 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	private SharedPreferences.Editor preferenceEditor;
 	private SharedPreferences pref;
 	
-	private Weather[] weather = new Weather[4];
+	public static Weather[] weather = new Weather[4];
 	
 	private BlueWeatherDB blueWeatherDB;
 	private BaiduLocation baiduLocation;
@@ -107,36 +86,16 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	private int isRawDataLoaded;
 	private boolean isGpsEnabled;
 	
+	private WeatherFragment weatherFragment;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.weather_layout);
+		weatherFragment = (WeatherFragment) getFragmentManager().findFragmentById(R.id.weather_fragment);
 		
-		watherInfoLayout = (RelativeLayout) findViewById(R.id.weather_info_layout);
 		cityNameText = (TextView) findViewById(R.id.city_name);
-		
-		day1Image = (ImageView) findViewById(R.id.day1_image);
-		day1Temp1 = (TextView) findViewById(R.id.day1_temp1);
-		day1Temp2 = (TextView) findViewById(R.id.day1_temp2);
-		day1CurrentTemp = (TextView) findViewById(R.id.day1_current_temp);
-		day1Weather = (TextView) findViewById(R.id.day1_weather);
-		
-		day2Text = (TextView) findViewById(R.id.day2_text);
-		day2Image = (ImageView) findViewById(R.id.day2_image);
-		day2Temp1 = (TextView) findViewById(R.id.day2_temp1);
-		day2Temp2 = (TextView) findViewById(R.id.day2_temp2);
-		
-		day3Text = (TextView) findViewById(R.id.day3_text);
-		day3Image = (ImageView) findViewById(R.id.day3_image);
-		day3Temp1 = (TextView) findViewById(R.id.day3_temp1);
-		day3Temp2 = (TextView) findViewById(R.id.day3_temp2);
-		
-		day4Text = (TextView) findViewById(R.id.day4_text);
-		day4Image = (ImageView) findViewById(R.id.day4_image);
-		day4Temp1 = (TextView) findViewById(R.id.day4_temp1);
-		day4Temp2 = (TextView) findViewById(R.id.day4_temp2);
-		
 		updateBtn = (Button) findViewById(R.id.update);
 		settingBtn = (Button) findViewById(R.id.setting);
 		
@@ -153,8 +112,10 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		preferenceEditor = pref.edit();
 
 		for(int i = 0; i < 4; i++) {
-			weather[i] = new Weather();//????is
+			weather[i] = new Weather();
 		}
+		preferenceEditor.putBoolean("isFragmentWeatherShowed", true);
+		preferenceEditor.commit();
 	}
 	
 	@Override
@@ -227,30 +188,9 @@ public class WeatherActivity extends Activity implements OnClickListener{
 			progressDialog.dismiss();
 		}
 	}
-	private void showWeather(Weather [] weather) {
-		if (weather != null) {
-			day1Image.setImageResource(weather[0].imageId);
-			day1Temp1.setText(String.valueOf(weather[0].temp1) + CELSIUS);
-			day1Temp2.setText(String.valueOf(weather[0].temp2) + CELSIUS);
-			day1CurrentTemp.setText(String.valueOf(weather[0].current_tem + CELSIUS));
-			day1Weather.setText(weather[0].weather);
-			day2Image.setImageResource(weather[1].imageId);
-			day2Temp1.setText(String.valueOf(weather[1].temp1) + CELSIUS);
-			day2Temp2.setText(String.valueOf(weather[1].temp2) + CELSIUS);
-			day3Image.setImageResource(weather[2].imageId);
-			day3Temp1.setText(String.valueOf(weather[2].temp1) + CELSIUS);
-			day3Temp2.setText(String.valueOf(weather[2].temp2) + CELSIUS);
-			day4Image.setImageResource(weather[3].imageId);
-			day4Temp1.setText(String.valueOf(weather[3].temp1) + CELSIUS);
-			day4Temp2.setText(String.valueOf(weather[3].temp2) + CELSIUS);
-			watherInfoLayout.setVisibility(View.VISIBLE);
-		} else {
-			Log.d(TAG, "weather == null");
-		}
-	}
 	
 	private boolean loadWeatherDataFromLocal(Weather [] weather) {
-		
+		Log.d(TAG, "loadWeatherDataFromLocal");
 		if (weather != null) {
 			weather[0].current_tem = pref.getInt("day1current_temp", -1);
 			weather[0].imageId = pref.getInt("day1imgeId", -1);
@@ -287,9 +227,11 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	}
 	
 	private void showLocalWeatherInfo() {
+		Log.d(TAG, "showLocalweatherInfo");
 		boolean ret = loadWeatherDataFromLocal(weather);
-		if (ret) {					
-			showWeather(weather);
+		if (ret) {
+			showWeatherFragment();
+			weatherFragment.showWeather(weather);
 			showCity(cityName);
 		} else {
 			Toast.makeText(this, "Load weather info. failed!", Toast.LENGTH_LONG).show();
@@ -367,13 +309,11 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		// TODO Auto-generated method stub
 		switch(arg0.getId()) {
 		case R.id.update:
-			Log.d(TAG, "update" + cityName);
-			showRemoteWeatherInfo(cityName);
+			onUpdateClicked();
 			break;
 		case R.id.setting:
 			Intent intent = new Intent(this, SettingActivity.class);
 			startActivity(intent);
-			//finish();
 			break;
 		default:
 			break;
@@ -403,13 +343,14 @@ public class WeatherActivity extends Activity implements OnClickListener{
 					String superLevelName = blueWeatherDB.queryCityNameSuperLevelName(cityName, LEVEL_COU);
 					showRemoteWeatherInfo(superLevelName);
 				} else if (msg.arg1 == LEVEL_CIT){
-					
-					Toast.makeText(WeatherActivity.this, "Query wether data ERROR, try later!", Toast.LENGTH_SHORT).show();
+					showNetErrorFragment();
+					Toast.makeText(WeatherActivity.this, "Network error!", Toast.LENGTH_SHORT).show();
 				}
 				showCity(cityName);
 				Log.d(TAG, "MSG_REQUEST_ERROR");
 				break;
 			case MSG_LOCATED_SUCCESS:
+				closeProgressDialog();
 				cityName = pref.getString("locatedCity", "上海市");
 				if (cityName.equals(pref.getString("storedCity", "上海市"))
 						&& pref.getInt("isWeatherDataStored", NO_WEATHER_DATA) == WEATHER_DATA_STORED) {
@@ -420,7 +361,9 @@ public class WeatherActivity extends Activity implements OnClickListener{
 				gpsStatusImage.setVisibility(View.VISIBLE);
 				break;
 			case MSG_LOCATED_ERROR:
-				Toast.makeText(WeatherActivity.this, "Location failed, switch city Manually!", Toast.LENGTH_SHORT).show();
+				closeProgressDialog();
+				showNetErrorFragment();
+				Toast.makeText(WeatherActivity.this, "Location failed!", Toast.LENGTH_SHORT).show();
 			default:
 				break;
 			}
@@ -449,6 +392,7 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		} else {
 			Log.d(TAG, "gps enabled");
 			if (startFromWhere == FROM_APPLICATION) {
+				showProgressDialog("Positioning...");
 				baiduLocation.requestLocation();
 			} else if (startFromWhere == FROM_SETTING){
 				if (pref.getBoolean("isLocated", false) &&
@@ -457,12 +401,53 @@ public class WeatherActivity extends Activity implements OnClickListener{
 					cityName = pref.getString("storedCity", "霍山县");
 					showLocalWeatherInfo();
 				} else {
+					showProgressDialog("Positioning...");
 					baiduLocation.requestLocation();
 				}
 			} else {
 				cityName = getIntent().getStringExtra("cityName");
 				showRemoteWeatherInfo(cityName);
 			}
+		}
+	}
+	
+	private void showNetErrorFragment() {
+		NetErrorFragment netErrorfragment = new NetErrorFragment();
+		if (pref.getBoolean("isFragmentWeatherShowed", true)) {
+			FragmentManager fragmentManager = getFragmentManager();
+			FragmentTransaction transaction = fragmentManager.beginTransaction();
+			transaction.replace(R.id.right_layout, netErrorfragment);
+			transaction.commit();
+			preferenceEditor.putBoolean("isFragmentWeatherShowed", false);
+			preferenceEditor.commit();
+		} else {
+			return;
+		}
+	}
+	
+	private void showWeatherFragment() {
+		if (!pref.getBoolean("isFragmentWeatherShowed", true)) {
+			Log.d(TAG, "showWeatherFragment");
+			FragmentManager fragmentManager = getFragmentManager();
+			FragmentTransaction transaction = fragmentManager.beginTransaction();
+			transaction.replace(R.id.right_layout, weatherFragment);
+			transaction.commit();
+			preferenceEditor.putBoolean("isFragmentWeatherShowed", true);
+			preferenceEditor.commit();
+		} else {
+			Log.d(TAG, "showWeatherFragment xxxxx");
+			return;
+		}
+	}
+	
+	public void onUpdateClicked() {
+		isGpsEnabled = pref.getBoolean("isGpsEnabled", false);
+		if (isGpsEnabled == true) {
+			Log.d(TAG, "update clicked, gpsEnabled");
+			showProgressDialog("Positioning...");
+			baiduLocation.requestLocation();
+		} else {
+			showRemoteWeatherInfo(cityName);
 		}
 	}
 }

@@ -64,6 +64,7 @@ public class BaiduLocation {
 			public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
 				if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
 					Log.d(TAG, "reverse GeoCode failed!");
+					sendMessage(MSG_LOCATED_ERROR);
 					return;
 				}
 				onSaveGeoResult(result.getAddress());
