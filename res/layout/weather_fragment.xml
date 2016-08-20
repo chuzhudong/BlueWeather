@@ -7,8 +7,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:orientation="vertical" >
 
         <RelativeLayout
@@ -53,12 +53,12 @@
                         android:textSize="20sp" />
 
                     <TextView
+                        android:id="@+id/day1_verticalline"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
-                        android:text="|"
                         android:textColor="#FFF"
                         android:textSize="20sp" />
 
@@ -71,12 +71,12 @@
                         android:textSize="20sp" />
 
                     <TextView
+                        android:id="@+id/day1_waveline"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
-                        android:text="@string/wave_symbol"
                         android:textColor="#FFF"
                         android:textSize="18sp" />
 

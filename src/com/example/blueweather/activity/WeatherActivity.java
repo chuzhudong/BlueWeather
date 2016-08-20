@@ -14,6 +14,7 @@ import com.example.blueweather.util.RawDataCallBackListener;
 import com.example.blueweather.util.Utility;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
@@ -28,6 +29,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -52,7 +54,6 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	public static final int MSG_LOCATED_SUCCESS = 6;
 	public static final int MSG_LOCATED_ERROR = 7;
 	
-	//public static final int SHOW_WEATHER = 4;
 	private static final int FROM_APPLICATION = 0;
 	private static final int FROM_CITYLIST = 1;
 	private static final int FROM_SETTING = 2;
@@ -74,7 +75,7 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	private SharedPreferences.Editor preferenceEditor;
 	private SharedPreferences pref;
 	
-	public static Weather[] weather = new Weather[4];
+	public Weather[] weather = new Weather[4];
 	
 	private BlueWeatherDB blueWeatherDB;
 	private BaiduLocation baiduLocation;
@@ -85,15 +86,20 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	private int isWeatherDataStored;
 	private int isRawDataLoaded;
 	private boolean isGpsEnabled;
+	private boolean isLocated;
 	
 	private WeatherFragment weatherFragment;
+//	private NetErrorFragment netErrorFragment;
+//	private FrameLayout rightLayout;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.weather_layout);
-		weatherFragment = (WeatherFragment) getFragmentManager().findFragmentById(R.id.weather_fragment);
+//		weatherFragment = (WeatherFragment) getFragmentManager().findFragmentById(R.id.weather_fragment);
+//		netErrorFragment = (NetErrorFragment) getFragmentManager().findFragmentById(R.id.neterror_fragment);
+//		rightLayout = (FrameLayout) findViewById(R.id.right_layout);
 		
 		cityNameText = (TextView) findViewById(R.id.city_name);
 		updateBtn = (Button) findViewById(R.id.update);
@@ -106,7 +112,6 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		
 		blueWeatherDB = BlueWeatherDB.getInstance(this);
 		baiduLocation = new BaiduLocation(this, handler);
-		Log.d(TAG, "onCreate");
 		
 		pref = getSharedPreferences("data", MODE_PRIVATE);
 		preferenceEditor = pref.edit();
@@ -114,8 +119,6 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		for(int i = 0; i < 4; i++) {
 			weather[i] = new Weather();
 		}
-		preferenceEditor.putBoolean("isFragmentWeatherShowed", true);
-		preferenceEditor.commit();
 	}
 	
 	@Override
@@ -136,7 +139,7 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	
 	@Override
 	protected void onDestroy() {
-		Log.d(TAG, "onDestroy is called .........");
+		//should stop BuaiduApi(), otherwise leak_error comes.
 		baiduLocation.stopBaiduApi();
 		super.onDestroy();
 	}
@@ -158,8 +161,10 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	}
 	
 	private void showCity(String cityName) {
+		isGpsEnabled = pref.getBoolean("isGpsEnabled", false);
+		isLocated = pref.getBoolean("isLocated", false);
 		if (!TextUtils.isEmpty(cityName)) {
-			if (isGpsEnabled) {
+			if (isGpsEnabled && isLocated) {
 				gpsStatusImage.setVisibility(View.VISIBLE);
 			} else {
 				gpsStatusImage.setVisibility(View.INVISIBLE);
@@ -177,6 +182,9 @@ public class WeatherActivity extends Activity implements OnClickListener{
 			progressDialog = new ProgressDialog(this);
 			progressDialog.setMessage(string);
 			progressDialog.setCancelable(false);
+		} else {
+			//should be like this, to update the message to be showed.
+			progressDialog.setMessage(string);
 		}
 		progressDialog.show();
 	}
@@ -184,7 +192,6 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	private void closeProgressDialog() {
 		// TODO Auto-generated method stub
 		if (progressDialog != null) {
-			Log.d(TAG, "dismiss");
 			progressDialog.dismiss();
 		}
 	}
@@ -219,7 +226,7 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		Log.d(TAG,"showRemoteweatherInfo");
 		if(!TextUtils.isEmpty(cityName)) {
 			int level = blueWeatherDB.queryCityNameLevel(cityName);
-			showProgressDialog("Loading weather data ...");
+			showProgressDialog("正在加载天气数据...");
 			HttpUtil.loadRemoteWeaherInfo(handler, cityName, level);
 		} else {
 			Log.d(TAG,"cityName == null");
@@ -231,7 +238,6 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		boolean ret = loadWeatherDataFromLocal(weather);
 		if (ret) {
 			showWeatherFragment();
-			weatherFragment.showWeather(weather);
 			showCity(cityName);
 		} else {
 			Toast.makeText(this, "Load weather info. failed!", Toast.LENGTH_LONG).show();
@@ -300,7 +306,7 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	}
 	
 	private void buildDataBase() {
-		showProgressDialog("Loading city list at first lanch...");
+		showProgressDialog("正在初始化应用...");
 		queryFromRawData(LEVEL_PRO);
 	}
 	
@@ -361,8 +367,10 @@ public class WeatherActivity extends Activity implements OnClickListener{
 				gpsStatusImage.setVisibility(View.VISIBLE);
 				break;
 			case MSG_LOCATED_ERROR:
+				Log.d(TAG,"MSG_LOCATED_ERR");
 				closeProgressDialog();
 				showNetErrorFragment();
+				showCity(cityName);
 				Toast.makeText(WeatherActivity.this, "Location failed!", Toast.LENGTH_SHORT).show();
 			default:
 				break;
@@ -392,16 +400,17 @@ public class WeatherActivity extends Activity implements OnClickListener{
 		} else {
 			Log.d(TAG, "gps enabled");
 			if (startFromWhere == FROM_APPLICATION) {
-				showProgressDialog("Positioning...");
+				showProgressDialog("正在定位...");
+				cityName = pref.getString("storedCity", "上海市");
 				baiduLocation.requestLocation();
 			} else if (startFromWhere == FROM_SETTING){
 				if (pref.getBoolean("isLocated", false) &&
 						isWeatherDataStored == WEATHER_DATA_STORED &&
 						pref.getString("locatedCity", "").equals(pref.getString("storedCity", ""))) {
-					cityName = pref.getString("storedCity", "霍山县");
 					showLocalWeatherInfo();
 				} else {
-					showProgressDialog("Positioning...");
+					showProgressDialog("正在定位...");
+					cityName = pref.getString("storedCity", "上海市");
 					baiduLocation.requestLocation();
 				}
 			} else {
@@ -412,11 +421,11 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	}
 	
 	private void showNetErrorFragment() {
-		NetErrorFragment netErrorfragment = new NetErrorFragment();
+		NetErrorFragment netErrorFragment = new NetErrorFragment();
 		if (pref.getBoolean("isFragmentWeatherShowed", true)) {
 			FragmentManager fragmentManager = getFragmentManager();
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
-			transaction.replace(R.id.right_layout, netErrorfragment);
+			transaction.replace(R.id.right_layout, netErrorFragment);
 			transaction.commit();
 			preferenceEditor.putBoolean("isFragmentWeatherShowed", false);
 			preferenceEditor.commit();
@@ -426,25 +435,28 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	}
 	
 	private void showWeatherFragment() {
-		if (!pref.getBoolean("isFragmentWeatherShowed", true)) {
-			Log.d(TAG, "showWeatherFragment");
+		Log.d(TAG, "showWeatherFragment");
+		if (!pref.getBoolean("isFragmentWeatherShowed", false) || weatherFragment == null) {
+			Log.d(TAG, "WeatherFragment not showed");
+			weatherFragment = new WeatherFragment();
 			FragmentManager fragmentManager = getFragmentManager();
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
 			transaction.replace(R.id.right_layout, weatherFragment);
 			transaction.commit();
 			preferenceEditor.putBoolean("isFragmentWeatherShowed", true);
 			preferenceEditor.commit();
-		} else {
-			Log.d(TAG, "showWeatherFragment xxxxx");
-			return;
+		} else if (weatherFragment != null){
+			Log.d(TAG, "do not showWeatherFragment, just update weather");
+			weatherFragment.showWeather(weather);
 		}
 	}
 	
 	public void onUpdateClicked() {
 		isGpsEnabled = pref.getBoolean("isGpsEnabled", false);
+		cityName = pref.getString("storedCity", "上海市");
 		if (isGpsEnabled == true) {
 			Log.d(TAG, "update clicked, gpsEnabled");
-			showProgressDialog("Positioning...");
+			showProgressDialog("正在定位...");
 			baiduLocation.requestLocation();
 		} else {
 			showRemoteWeatherInfo(cityName);

@@ -57,6 +57,8 @@ public class BaiduLocation {
 		context = BlueWeatherApplication.getContext();
 		pref = context.getSharedPreferences("data", context.MODE_PRIVATE);
 		preferenceEditor = pref.edit();
+		
+		setLocatedFalse();
 
 		geoCoder = GeoCoder.newInstance();
 		geoCoder.setOnGetGeoCodeResultListener(new OnGetGeoCoderResultListener() {
@@ -144,8 +146,13 @@ public class BaiduLocation {
 	}
 	
 	public void requestLocation() {
+		setLocatedFalse();
+		locationClient.requestLocation();
+	}
+	
+	private void setLocatedFalse() {
 		preferenceEditor.putBoolean("isLocated", false);
 		preferenceEditor.putString("locatedCity", "…œ∫£ –");
-		locationClient.requestLocation();
+		preferenceEditor.commit();
 	}
 }

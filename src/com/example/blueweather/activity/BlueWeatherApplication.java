@@ -72,6 +72,7 @@ public class BlueWeatherApplication extends Application {
 		}
 
 		preferenceEditor.putInt("startFromWhere", FROM_APPLICATION);
+		preferenceEditor.putBoolean("isFragmentWeatherShowed", false);
 		preferenceEditor.commit();
 	}
 	

@@ -33,6 +33,7 @@
         <activity
             android:name="com.example.blueweather.activity.WeatherActivity"
             android:label="@string/app_name"
+            android:configChanges="orientation|screenSize"
             android:launchMode="singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,11 +42,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.blueweather.activity.SettingActivity" >
-            
+            android:name="com.example.blueweather.activity.SettingActivity"
+            android:configChanges="orientation|screenSize" >  
         </activity>
-                <activity
-            android:name="com.example.blueweather.activity.ChooseAreaActivity" >
+        <activity
+            android:name="com.example.blueweather.activity.ChooseAreaActivity"
+            android:configChanges="orientation|screenSize" >
 		</activity>
 		
         <service

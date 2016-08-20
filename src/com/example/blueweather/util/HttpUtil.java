@@ -77,14 +77,11 @@ public class HttpUtil {
 				Context context = BlueWeatherApplication.getContext();
 				SharedPreferences.Editor preferenceEditor = context.getSharedPreferences("data", Context.MODE_PRIVATE).edit();
 				HttpURLConnection connection = null;
-				int day = -1;
-				Log.d(TAG, "st= " + cityName + ", level = " + level);				
+				int day = -1;			
 				String st = Utility.filterString(level, cityName);
-				Log.d(TAG, "st= " + st + ", level = " + level);
 				for (day = 1; day <= 4; day++) {
 					String address = "http://php.weather.sina.com.cn/xml.php?city="
 							+ Utility.unicodeToGb2312(st) + "&password=DJOYnieT8234jlsK&day=" + Integer.toString(day - 1);
-					Log.d(TAG, address);
 					try {
 						URL url = new URL(address);
 						connection = (HttpURLConnection) url.openConnection();

@@ -48,17 +48,17 @@
         android:layout_weight="1"
         android:background="#484E61" >
         	
-          	<fragment
-        	    android:id="@+id/weather_fragment"
+<!--            <fragment
+				android:id="@+id/weather_fragment"
         	    android:name="com.example.blueweather.fragment.WeatherFragment"
         	    android:layout_width="match_parent"
-        	    android:layout_height="match_parent" />
-<!-- 
-        	<fragment
+        	    android:layout_height="match_parent" />  -->
+
+<!--          	<fragment
         	   	android:id="@+id/neterror_fragment"
         	    android:name="com.example.blueweather.fragment.NetErrorFragment"
         	    android:layout_width="match_parent"
-        	    android:layout_height="match_parent" />  -->
+        	    android:layout_height="match_parent" /> -->
         </FrameLayout>
 
 </LinearLayout>

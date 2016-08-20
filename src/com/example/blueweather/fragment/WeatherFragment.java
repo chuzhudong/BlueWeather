@@ -16,75 +16,95 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class WeatherFragment extends Fragment {
-	
-	private static final String CELSIUS= "\u2103";
+
+	private static final String CELSIUS = "\u2103";
 	private static final String TAG = "WeatherFragment";
-	
+
 	private ImageView day1Image;
 	private TextView day1Temp1;
 	private TextView day1Temp2;
 	private TextView day1CurrentTemp;
 	private TextView day1Weather;
-	
+	private TextView day1VerticalLine;
+	private TextView day1WaveLine;
+
 	private TextView day2Text;
 	private ImageView day2Image;
 	private TextView day2Temp1;
 	private TextView day2Temp2;
-	
+
 	private TextView day3Text;
 	private ImageView day3Image;
 	private TextView day3Temp1;
 	private TextView day3Temp2;
-	
+
 	private TextView day4Text;
 	private ImageView day4Image;
 	private TextView day4Temp1;
 	private TextView day4Temp2;
-	
+
+	WeatherActivity weatherActivity;
+
 	@Override
-	public void onAttach(Context  context) {
+	public void onAttach(Context context) {
 		super.onAttach(context);
-		for(int i = 0; i < 4; i++) {
+		for (int i = 0; i < 4; i++) {
 			//
 		}
-		
+
 	}
-	
+
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.weather_fragment, container, false);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.weather_fragment, container,
+				false);
+		Log.d(TAG, "inflater.inflate");
 		day1Image = (ImageView) view.findViewById(R.id.day1_image);
 		day1Temp1 = (TextView) view.findViewById(R.id.day1_temp1);
 		day1Temp2 = (TextView) view.findViewById(R.id.day1_temp2);
 		day1CurrentTemp = (TextView) view.findViewById(R.id.day1_current_temp);
 		day1Weather = (TextView) view.findViewById(R.id.day1_weather);
-		
+		day1VerticalLine = (TextView) view.findViewById(R.id.day1_verticalline);
+		day1WaveLine = (TextView) view.findViewById(R.id.day1_waveline);
+
 		day2Text = (TextView) view.findViewById(R.id.day2_text);
 		day2Image = (ImageView) view.findViewById(R.id.day2_image);
 		day2Temp1 = (TextView) view.findViewById(R.id.day2_temp1);
 		day2Temp2 = (TextView) view.findViewById(R.id.day2_temp2);
-		
+
 		day3Text = (TextView) view.findViewById(R.id.day3_text);
 		day3Image = (ImageView) view.findViewById(R.id.day3_image);
 		day3Temp1 = (TextView) view.findViewById(R.id.day3_temp1);
 		day3Temp2 = (TextView) view.findViewById(R.id.day3_temp2);
-		
+
 		day4Text = (TextView) view.findViewById(R.id.day4_text);
 		day4Image = (ImageView) view.findViewById(R.id.day4_image);
 		day4Temp1 = (TextView) view.findViewById(R.id.day4_temp1);
 		day4Temp2 = (TextView) view.findViewById(R.id.day4_temp2);
-		
+
+		weatherActivity = (WeatherActivity) getActivity();
 		return view;
 	}
-	
-	
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		Log.d(TAG, "WeatherFragment onStart");
+		showWeather(weatherActivity.weather);
+	}
+
 	public void showWeather(Weather[] weather) {
+		Log.d(TAG, "showWeather(Weather[] weather)");
 		if (weather[0] != null) {
 			day1Image.setImageResource(weather[0].imageId);
 			day1Temp1.setText(String.valueOf(weather[0].temp1) + CELSIUS);
 			day1Temp2.setText(String.valueOf(weather[0].temp2) + CELSIUS);
-			day1CurrentTemp.setText(String.valueOf(weather[0].current_tem + CELSIUS));
+			day1CurrentTemp.setText(String.valueOf(weather[0].current_tem
+					+ CELSIUS));
 			day1Weather.setText(weather[0].weather);
+			day1VerticalLine.setText("|");
+			day1WaveLine.setText("~");
 			day2Image.setImageResource(weather[1].imageId);
 			day2Temp1.setText(String.valueOf(weather[1].temp1) + CELSIUS);
 			day2Temp2.setText(String.valueOf(weather[1].temp2) + CELSIUS);
@@ -97,5 +117,28 @@ public class WeatherFragment extends Fragment {
 		} else {
 			Log.d(TAG, "weather == null");
 		}
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		Log.d(TAG, "WeatherFragment onStop");
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		Log.d(TAG, "WeatherFragment onDetach");
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Log.d(TAG, "WeatherFragment onDestroy");
+	}
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		Log.d(TAG, "WeatherFragment onSaveInatance");
 	}
 }

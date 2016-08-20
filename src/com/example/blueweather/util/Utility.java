@@ -260,7 +260,7 @@ public class Utility {
 	}
 	
 	public static Weather parseXMLWithPull(String xmlData) {
-		Log.d(TAG, xmlData);
+		//Log.d(TAG, xmlData);
 		Weather mWeather = null;
 		try {
 			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
