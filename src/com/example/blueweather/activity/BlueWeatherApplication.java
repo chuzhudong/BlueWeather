@@ -45,9 +45,6 @@ public class BlueWeatherApplication extends Application {
 		if (RAWDATA_NONE == isRawDataLoaded) {
 			preferenceEditor.putInt("isRawDataLoaded", RAWDATA_NOT_LOADED);
 			preferenceEditor.commit();
-		} else if (RAWDATA_NOT_LOADED == isRawDataLoaded) {	
-			
-		} else {	
 		}
 		
 		if (isWeatherDataStored == CITY_NONE) {

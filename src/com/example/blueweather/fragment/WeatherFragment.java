@@ -27,6 +27,7 @@ public class WeatherFragment extends Fragment {
 	private TextView day1Weather;
 	private TextView day1VerticalLine;
 	private TextView day1WaveLine;
+	private TextView day1UpdateTime;
 
 	private TextView day2Text;
 	private ImageView day2Image;
@@ -67,6 +68,7 @@ public class WeatherFragment extends Fragment {
 		day1Weather = (TextView) view.findViewById(R.id.day1_weather);
 		day1VerticalLine = (TextView) view.findViewById(R.id.day1_verticalline);
 		day1WaveLine = (TextView) view.findViewById(R.id.day1_waveline);
+		day1UpdateTime = (TextView) view.findViewById(R.id.update_time);
 
 		day2Text = (TextView) view.findViewById(R.id.day2_text);
 		day2Image = (ImageView) view.findViewById(R.id.day2_image);
@@ -105,6 +107,7 @@ public class WeatherFragment extends Fragment {
 			day1Weather.setText(weather[0].weather);
 			day1VerticalLine.setText("|");
 			day1WaveLine.setText("~");
+			day1UpdateTime.setText(weather[0].updateTime);
 			day2Image.setImageResource(weather[1].imageId);
 			day2Temp1.setText(String.valueOf(weather[1].temp1) + CELSIUS);
 			day2Temp2.setText(String.valueOf(weather[1].temp2) + CELSIUS);

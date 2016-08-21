@@ -35,6 +35,8 @@ public class Utility {
 	private static final int PRO = 1;
 	private static final int CIT = 2;
 	private static final int COU = 3;
+
+	private static int result;
 	
 	/**
 	 * parse jason data in Province to database
@@ -300,7 +302,14 @@ public class Utility {
 							e.printStackTrace();
 							mWeather.current_tem = (mWeather.temp1 + mWeather.temp2) / 2;
 						}
-					} 
+					} else if ("udatetime".equals(nodeName)) {
+						try {
+							mWeather.updateTime = xmlPullParser.nextText();
+						} catch (Exception e) {
+							e.printStackTrace();
+							mWeather.updateTime = "今日发布";
+						}
+					}
 					break;
 				}
 				case XmlPullParser.END_TAG: {
@@ -383,4 +392,25 @@ public class Utility {
 		return result;	
 	}
 	
+	public static String getRemoteWeatherUpdateTime(String param) {
+		String result = null;
+		if(!TextUtils.isEmpty(param)) {
+			if ("今日发布".equals(param)) {
+				result = param;
+			} else {
+				try {
+					int day = Integer.parseInt(param.substring(8, 10));
+					int hour = Integer.parseInt(param.substring(11, 13));
+					result = String.valueOf(day) + "日" + String.valueOf(hour) + "时发布";
+				} catch (Exception e) {
+					result = "今日发布";
+					e.printStackTrace();
+				}
+			}
+		} else {
+			result = "今日发布";
+		}
+		Log.d(TAG, result);
+		return result;
+	}
 }

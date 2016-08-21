@@ -92,7 +92,7 @@ public class HttpUtil {
 						BufferedReader reader = new BufferedReader(
 								new InputStreamReader(in));
 						StringBuilder response = new StringBuilder();
-						String line;
+						String line, updateTime;
 						while ((line = reader.readLine()) != null) {
 							response.append(line);
 						}
@@ -105,6 +105,11 @@ public class HttpUtil {
 								preferenceEditor.putInt("day" + Integer.toString(day) + "temp1", mWeather.temp1);
 								preferenceEditor.putInt("day" + Integer.toString(day) + "temp2", mWeather.temp2);
 								preferenceEditor.putInt("day" + Integer.toString(day) + "current_temp", mWeather.current_tem);
+								if (day == 1) {
+									Log.d(TAG, mWeather.updateTime);
+									preferenceEditor.putString("remoteWeatherUpdateTime", 
+											Utility.getRemoteWeatherUpdateTime(mWeather.updateTime));
+								}
 								preferenceEditor.commit();
 							} else {
 								Log.d(TAG, "mWeather == null error");

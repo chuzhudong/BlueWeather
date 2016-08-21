@@ -6,8 +6,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="#484E61" >
+        android:layout_weight="1" >
         <LinearLayout
             android:id="@+id/neterror_layout"
             android:layout_height="wrap_content"

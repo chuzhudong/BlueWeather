@@ -12,6 +12,8 @@ public class Weather {
 	
 	public int current_tem;
 	
+	public String updateTime;
+	
 	public Weather () {
 		
 	}

@@ -140,8 +140,13 @@ public class WeatherActivity extends Activity implements OnClickListener{
 	@Override
 	protected void onDestroy() {
 		//should stop BuaiduApi(), otherwise leak_error comes.
-		baiduLocation.stopBaiduApi();
+		//
 		super.onDestroy();
+		baiduLocation.stopBaiduApi();
+		preferenceEditor.putInt("startFromWhere", FROM_APPLICATION);
+		preferenceEditor.putBoolean("isFragmentWeatherShowed", false);
+		preferenceEditor.commit();
+		Log.d(TAG, "onDestroy");
 	}
 	
 	@Override
@@ -204,6 +209,8 @@ public class WeatherActivity extends Activity implements OnClickListener{
 			weather[0].weather = pref.getString("day1weather", "");
 			weather[0].temp1 = pref.getInt("day1temp1", -1);
 			weather[0].temp2 = pref.getInt("day1temp2", -1);
+			weather[0].updateTime = pref.getString("remoteWeatherUpdateTime", "今日发布");
+			Log.d(TAG, weather[0].updateTime);
 			
 			weather[1].imageId = pref.getInt("day2imgeId", -1);
 			weather[1].temp1 = pref.getInt("day2temp1", -1);
@@ -358,12 +365,12 @@ public class WeatherActivity extends Activity implements OnClickListener{
 			case MSG_LOCATED_SUCCESS:
 				closeProgressDialog();
 				cityName = pref.getString("locatedCity", "上海市");
-				if (cityName.equals(pref.getString("storedCity", "上海市"))
-						&& pref.getInt("isWeatherDataStored", NO_WEATHER_DATA) == WEATHER_DATA_STORED) {
-					showLocalWeatherInfo();
-				} else {
+				//if (cityName.equals(pref.getString("storedCity", "上海市"))
+				//		&& pref.getInt("isWeatherDataStored", NO_WEATHER_DATA) == WEATHER_DATA_STORED) {
+				//	showLocalWeatherInfo();
+				//} else {
 					showRemoteWeatherInfo(cityName);
-				}
+				//}
 				gpsStatusImage.setVisibility(View.VISIBLE);
 				break;
 			case MSG_LOCATED_ERROR:
